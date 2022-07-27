@@ -1,0 +1,27 @@
+{
+    "name": "qr-it",
+    "private": true,
+    "version": "1.0.0",
+    "description": "create qr-code for text, image, and etc.",
+    "repository": "https://github.com/lopo12123/qr-it.git",
+    "author": "lopo<lopo@zju.edu.cn>",
+    "license": "MIT",
+    "scripts": {
+        "dev:qr": "vite --host",
+        "build:qr": "vue-tsc --noEmit && vite build"
+    },
+    "dependencies": {
+        "qrcode": "^1.5.1",
+        "vue": "^3.2.37",
+        "vue-router": "^4.1.2"
+    },
+    "devDependencies": {
+        "@types/node": "^14.18.22",
+        "@types/qrcode": "^1.4.2",
+        "@vitejs/plugin-vue": "^3.0.1",
+        "sass": "^1.54.0",
+        "typescript": "^4.7.4",
+        "vite": "^3.0.3",
+        "vue-tsc": "^0.39.0"
+    }
+}
