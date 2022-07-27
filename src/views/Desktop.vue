@@ -4,6 +4,8 @@ import { OutputType } from "@/scripts";
 
 const target = ref<OutputType>('text')
 
+const textSource = ref('')
+
 const toQR = () => {
     console.log(target.value)
 }
@@ -27,9 +29,8 @@ const toQR = () => {
         </div>
 
         <!--region source-box-->
-        <div class="text-source">
+        <textarea class="text-source" v-model="textSource"/>
 
-        </div>
         <div class="url-source">
 
         </div>
@@ -89,7 +90,16 @@ const toQR = () => {
 
     // region source-box
     .text-source {
-
+        position: relative;
+        width: 100%;
+        height: 10rem;
+        margin: 1rem 0;
+        padding: 1rem;
+        border: solid 1px #7b7b7b;
+        outline: none;
+        background-color: #f4f4f4;
+        color: #7b7b7b;
+        box-sizing: border-box;
     }
 
     .url-source {
