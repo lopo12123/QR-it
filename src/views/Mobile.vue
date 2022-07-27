@@ -3,19 +3,15 @@
 </script>
 
 <template>
-    <div class="home-view">
-        waiting...
+    <div class="mobile-view">
+        mobile
     </div>
 </template>
 
 <style lang="scss" scoped>
-.home-view {
+.mobile-view {
     position: relative;
     width: 100%;
     height: 100%;
-    color: #7b7b7b;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 </style>

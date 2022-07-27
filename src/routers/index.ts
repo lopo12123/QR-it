@@ -6,7 +6,17 @@ const routes: RouteRecordRaw[] = [
         path: '/',
         name: 'Home',
         component: Home
-    }
+    },
+    {
+        path: '/desktop',
+        name: 'Desktop',
+        component: () => import("@/views/Desktop.vue")
+    },
+    {
+        path: '/mobile',
+        name: 'mobile',
+        component: () => import("@/views/Mobile.vue")
+    },
 ]
 
 const routerOptions: RouterOptions = {
