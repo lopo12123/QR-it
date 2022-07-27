@@ -58,6 +58,7 @@ const toQR = () => {
         position: relative;
         width: 100%;
         height: 2rem;
+        margin: 1rem 0;
         display: flex;
         align-items: center;
         justify-content: flex-start;
@@ -96,10 +97,12 @@ const toQR = () => {
         margin: 1rem 0;
         padding: 1rem;
         border: solid 1px #7b7b7b;
+        border-radius: 0.5rem;
         outline: none;
         background-color: #f4f4f4;
         color: #7b7b7b;
         box-sizing: border-box;
+        resize: none;
     }
 
     .url-source {
