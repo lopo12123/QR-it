@@ -15,21 +15,21 @@ const toQR = () => {
     <div class="desktop-view">
         <div class="output-selector">
             <div :class="target === 'text' ? 'active' : 'default'"
-                 @click="target === 'text'">
+                 @click="target = 'text'">
                 Text
             </div>
             <div :class="target === 'url' ? 'active' : 'default'"
-                 @click="target === 'url'">
+                 @click="target = 'url'">
                 URL
             </div>
             <div :class="target === 'image' ? 'active' : 'default'"
-                 @click="target === 'image'">
+                 @click="target = 'image'">
                 Image
             </div>
         </div>
 
         <!--region source-box-->
-        <textarea class="text-source" v-model="textSource"/>
+        <textarea v-if="target === 'text'" class="text-source" v-model="textSource"/>
 
         <div class="url-source">
 
