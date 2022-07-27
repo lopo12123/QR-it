@@ -4,7 +4,7 @@
 
 <template>
     <div class="mobile-view">
-        mobile
+        not support yet.
     </div>
 </template>
 
