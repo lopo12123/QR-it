@@ -373,7 +373,7 @@ const toQR = () => {
 
                     &::-webkit-slider-thumb {
                         -webkit-appearance: none;
-                        width: 1rem;
+                        width: 0.5rem;
                         height: 1rem;
                         border-radius: 0.5rem;
                         background: #7b7b7b80;
@@ -396,6 +396,14 @@ const toQR = () => {
                         display: flex;
                         align-items: center;
                         justify-content: center;
+
+                        &:first-child {
+                            border-radius: 1rem 0 0 1rem;
+                        }
+
+                        &:last-child {
+                            border-radius: 0 1rem 1rem 0;
+                        }
                     }
 
                     .radio-default {
