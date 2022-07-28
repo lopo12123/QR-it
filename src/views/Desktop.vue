@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import { QRCodeRenderersOptions, toCanvas } from "qrcode";
 
-const targetType = ref<'text' | 'url'>('url')
+const targetType = ref<'text' | 'url'>('text')
 
 // 源内容大小限制
 const textLimit = ref({
@@ -28,7 +28,7 @@ const address = ref('')
 // endregion
 
 // region custom options
-const configurationVisible = ref(true)
+const configurationVisible = ref(false)
 const darkColor = ref('#000000')
 const lightColor = ref('#ffffff')
 const strokeWidth = ref(4)
