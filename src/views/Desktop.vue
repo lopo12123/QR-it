@@ -14,40 +14,6 @@ const protocol = ref<'https' | 'http'>('https')
 const address = ref('')
 // endregion
 
-// region image
-const selectImage = () => {
-    alert('not support yet.')
-    return;
-
-    // todo! arraybuffer -> u8ClampedArray
-    const ipt: HTMLInputElement = document.createElement('input')
-    ipt.type = 'file'
-    ipt.accept = '.png,.jpg'
-
-    ipt.onchange = () => {
-        const file = ipt.files?.[0]
-        if(!file) drawFail('No File!')
-        else {
-            const reader = new FileReader()
-            reader.onload = () => {
-                const buffer = reader.result as ArrayBuffer
-                const u8 = new Uint8Array(buffer)
-                const u8clamped = new Uint8ClampedArray(buffer)
-
-                console.log(buffer, u8clamped)
-
-                // toCanvas(outputContainer.value!, [ {
-                //     data: u8 as Buffer,
-                //     mode: 'byte'
-                // } ])
-            }
-            reader.readAsArrayBuffer(file)
-        }
-    }
-    ipt.click()
-}
-// endregion
-
 // region 渲染二维码
 const outputContainer = ref<HTMLCanvasElement>()
 const drawFail = (text?: string) => {
@@ -67,7 +33,7 @@ const toQR = () => {
     const cvs = outputContainer.value
     if(!cvs) return
 
-    switch (targetType.value) {
+    switch(targetType.value) {
         case 'text':
             if(textSource.value.trim() === '') drawFail('Empty Input!')
             else toCanvas(cvs, textSource.value ?? '')
@@ -83,8 +49,6 @@ const toQR = () => {
                     console.log(_)
                     drawFail()
                 })
-            break
-        case 'image':
             break
     }
 }
@@ -102,16 +66,17 @@ const toQR = () => {
                  @click="targetType = 'url'">
                 URL
             </div>
-            <div :class="targetType === 'image' ? 'active' : 'default'"
-                 @click="targetType = 'image'">
-                Image
-            </div>
         </div>
 
         <!--region source-box-->
-        <textarea class="text-source"
-                  v-if="targetType === 'text'"
-                  v-model="textSource"/>
+        <div class="text-source">
+            <div style="margin-bottom: 0.5rem">
+                <b>words limit:</b>&nbsp;
+                <i>{{ textSource.length }} / 700</i>
+            </div>
+            <textarea v-if="targetType === 'text'" class="text-box"
+                      v-model="textSource" maxlength="700"/>
+        </div>
 
         <div class="url-source" v-if="targetType === 'url'">
             <div class="protocol-box">
@@ -127,14 +92,9 @@ const toQR = () => {
 
             <input class="address-box" type="text" v-model="address">
         </div>
-
-        <div class="image-source" v-if="targetType === 'image'">
-            <div class="fake-btn" @click="selectImage">👆 Pick an image</div>
-            <div class="prefix"><b>Accept:</b> <i>picture within 2kb (*.png; *.jpg)</i></div>
-        </div>
         <!-- endregion -->
 
-        <div class="fake-btn" v-if="targetType !== 'image'" @click="toQR">Generate QR Code</div>
+        <div class="fake-btn" @click="toQR">Generate QR Code</div>
 
         <canvas ref="outputContainer"/>
     </div>
@@ -190,16 +150,21 @@ const toQR = () => {
     .text-source {
         position: relative;
         width: 100%;
-        height: 10rem;
         margin: 1rem 0;
-        padding: 1rem;
-        border: solid 1px #7b7b7b;
-        border-radius: 0.5rem;
-        outline: none;
-        background-color: #f4f4f4;
         color: #7b7b7b;
-        box-sizing: border-box;
-        resize: none;
+
+        .text-box {
+            position: relative;
+            width: 100%;
+            height: 10rem;
+            padding: 1rem;
+            border: solid 1px #7b7b7b;
+            border-radius: 0.5rem;
+            outline: none;
+            background-color: #f4f4f4;
+            box-sizing: border-box;
+            resize: none;
+        }
     }
 
     .url-source {
@@ -260,16 +225,6 @@ const toQR = () => {
             background-color: transparent;
             color: #343434;
             font-family: sans-serif;
-        }
-    }
-
-    .image-source {
-        position: relative;
-        width: 100%;
-
-        .prefix {
-            color: #7b7b7b;
-            font-size: 0.75rem;
         }
     }
 
