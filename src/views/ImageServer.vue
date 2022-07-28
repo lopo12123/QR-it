@@ -1,15 +1,23 @@
 <script lang="ts" setup>
 import { useRoute } from "vue-router";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 
 const route = useRoute()
-const base64Code = ref<string>((route.query?.code as string) ?? '')
+const boxRef = ref()
+const tryParse = () => {
+    const box = boxRef.value
+    if(!!box) {
+        box.innerHTML = `<img src="${ route.query?.code?.trim() ?? '' }" alt="图片解析出错"/>`
+    }
+}
+
+onMounted(() => {
+    tryParse()
+})
 </script>
 
 <template>
-    <div class="image-server with-scroll">
-        <img class="pic" :src="base64Code" alt="图片解析错误">
-    </div>
+    <div class="image-server with-scroll" ref="boxRef"></div>
 </template>
 
 <style lang="scss" scoped>
