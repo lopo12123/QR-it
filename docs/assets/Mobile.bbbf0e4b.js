@@ -1,0 +1,1 @@
+import{_ as e}from"./index.66950d84.js";import{o,b as t}from"./@vue.db1fd9a1.js";import"./vue-router.43edfa6c.js";const _={},s={class:"mobile-view"};function c(n,r){return o(),t("div",s," not support yet. ")}const p=e(_,[["render",c],["__scopeId","data-v-d4bee516"]]);export{p as default};

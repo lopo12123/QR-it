@@ -3,7 +3,7 @@ import { useRoute } from "vue-router";
 import { ref } from "vue";
 
 const route = useRoute()
-const base64Code = ref<string>(route.query?.code ?? '')
+const base64Code = ref<string>((route.query?.code as string) ?? '')
 </script>
 
 <template>
