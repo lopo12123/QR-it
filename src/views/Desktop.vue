@@ -1,17 +1,26 @@
 <script lang="ts" setup>
-import { readonly, ref } from "vue";
+import { ref } from "vue";
 import { QRCodeRenderersOptions, toCanvas } from "qrcode";
 
 const targetType = ref<'text' | 'url'>('url')
 
-// region source
-// 文本
+// 源内容大小限制
 const textLimit = ref({
     L: 900,
     M: 700,
     Q: 550,
     H: 400
 })
+// 容错率
+const errResist = ref({
+    L: 0.07,
+    M: 0.15,
+    Q: 0.25,
+    H: 0.30
+})
+
+// region source
+// 文本
 const textSource = ref('')
 // url
 const protocol = ref<'https' | 'http'>('https')
@@ -24,14 +33,41 @@ const darkColor = ref('#000000')
 const lightColor = ref('#ffffff')
 const strokeWidth = ref(4)
 const corrLevel = ref<'L' | 'M' | 'Q' | 'H'>('M')
-const changeCorrLevel = (to: 'L' | 'M' | 'Q' | 'H') => {
+const setCorrLevel = (to: 'L' | 'M' | 'Q' | 'H') => {
     corrLevel.value = to
     textSource.value = textSource.value.slice(0, textLimit.value[to])
+}
+const centerImage = ref('')
+const centerImageName = ref('')
+const pickCenterImage = () => {
+    const ipt = document.createElement('input')
+    ipt.type = 'file'
+    ipt.accept = '.png, .jpg'
+    ipt.onchange = () => {
+        const file = ipt.files?.[0]
+
+        if(!file) return
+        else if(file.size > 1024 * 1024) alert('Oversize(required to be smaller then 1MB)')
+        else {
+            const reader = new FileReader()
+            reader.onload = () => {
+                centerImageName.value = file.name
+                centerImage.value = reader.result
+            }
+            reader.readAsDataURL(file)
+        }
+    }
+    ipt.click()
+}
+const clearCenterImage = () => {
+    centerImage.value = ''
+    centerImageName.value = ''
 }
 // endregion
 
 // region render
 const outputContainer = ref<HTMLCanvasElement>()
+// 在画布上渲染错误信息
 const drawFail = (text?: string) => {
     const cvs = outputContainer.value
     if(!cvs) return
@@ -45,7 +81,8 @@ const drawFail = (text?: string) => {
     ctx.font = '16px bold'
     ctx.fillText(text ?? "Failed to generate QRCode. 😅", 0, 16)
 }
-const toQR = () => {
+// 在画布上渲染二维码和中心小图(如果存在)
+const drawQR = (text: string) => {
     const cvs = outputContainer.value
     if(!cvs) return
 
@@ -58,22 +95,36 @@ const toQR = () => {
         margin: strokeWidth.value
     }
 
+    toCanvas(cvs, text, options)
+        .then(() => {
+            if(centerImageName.value !== '') {
+                const ctx = cvs.getContext('2d')!
+                const qrSize = cvs.width
+                const blockSize = Math.floor(qrSize * errResist.value[corrLevel.value])
+                const imgSize = Math.floor(blockSize * 0.8)
+                const img = new Image(imgSize, imgSize)
+                img.src = centerImage.value
+                img.onload = () => {
+                    ctx.fillStyle = '#fff'
+                    ctx.fillRect((qrSize - blockSize) / 2, (qrSize - blockSize) / 2, blockSize, blockSize)
+                    ctx.drawImage(img, (qrSize - imgSize) / 2, (qrSize - imgSize) / 2, imgSize, imgSize)
+                }
+            }
+        })
+        .catch(_ => {
+            console.log(_)
+            drawFail()
+        })
+}
+const toQR = () => {
     switch(targetType.value) {
         case 'text':
             if(textSource.value.trim() === '') drawFail('Empty Input!')
-            else toCanvas(cvs, textSource.value ?? '', options)
-                .catch(_ => {
-                    console.log(_)
-                    drawFail()
-                })
+            else drawQR(textSource.value)
             break
         case 'url':
             if(address.value.trim() === '') drawFail('Empty Input!')
-            else toCanvas(cvs, `${ protocol.value }://${ address.value }`, options)
-                .catch(_ => {
-                    console.log(_)
-                    drawFail()
-                })
+            else drawQR(`${ protocol.value }://${ address.value }`)
             break
     }
 }
@@ -126,7 +177,7 @@ const toQR = () => {
             </div>
             <div class="configure-box"
                  :style="configurationVisible
-                 ? 'height: 12rem; margin-top: 1rem; border: solid 1px #7b7b7b;'
+                 ? 'height: 15rem; margin-top: 1rem; border: solid 1px #7b7b7b;'
                  : 'height: 0; margin: 0; border: none;'">
                 <div class="conf-line">
                     <span class="conf-label">dark area color</span>
@@ -145,22 +196,31 @@ const toQR = () => {
                     <span class="conf-label">error correction</span>
                     <div class="radios">
                         <span :class="corrLevel === 'L' ? 'radio-active' : 'radio-default'"
-                              @click="changeCorrLevel('L')">
+                              @click="setCorrLevel('L')">
                             low
                         </span>
                         <span :class="corrLevel === 'M' ? 'radio-active' : 'radio-default'"
-                              @click="changeCorrLevel('M')">
+                              @click="setCorrLevel('M')">
                             medium
                         </span>
                         <span :class="corrLevel === 'Q' ? 'radio-active' : 'radio-default'"
-                              @click="changeCorrLevel('Q')">
+                              @click="setCorrLevel('Q')">
                             quartile
                         </span>
                         <span :class="corrLevel === 'H' ? 'radio-active' : 'radio-default'"
-                              @click="changeCorrLevel('H')">
+                              @click="setCorrLevel('H')">
                             high
                         </span>
                     </div>
+                </div>
+                <div class="conf-line">
+                    <span class="conf-label">image (&lt1M)</span>
+                    <div class="image-picker" @click="pickCenterImage">pick</div>
+                    <span :class="['image-name', centerImageName === '' ? '' : 'clear-marker']"
+                          title="click to remove"
+                          @click="clearCenterImage">
+                        {{ centerImageName || 'unused' }}
+                    </span>
                 </div>
             </div>
         </div>
@@ -311,8 +371,8 @@ const toQR = () => {
 
         %configure-btn {
             position: relative;
-            width: 12rem;
-            height: 2rem;
+            width: calc(12rem - 2px);
+            height: calc(2rem - 2px);
             border: solid 1px #7b7b7b;
             border-radius: 1rem;
             text-align: center;
@@ -323,14 +383,14 @@ const toQR = () => {
 
         .configure-default {
             @extend %configure-btn;
-            color: #7b7b7b;
             background-color: #f4f4f4;
+            color: #7b7b7b;
         }
 
         .configure-active {
             @extend %configure-btn;
-            color: #f4f4f4;
             background-color: #7b7b7b;
+            color: #f4f4f4;
         }
 
         .configure-box {
@@ -416,6 +476,35 @@ const toQR = () => {
                         @extend %radio;
                         color: #f4f4f4;
                         background-color: #7b7b7b;
+                    }
+                }
+
+                .image-picker {
+                    position: relative;
+                    width: 5rem;
+                    height: 2rem;
+                    border-radius: 1rem;
+                    background-color: #7b7b7b;
+                    color: #f4f4f4;
+                    text-align: center;
+                    line-height: 2rem;
+                    user-select: none;
+                    cursor: pointer;
+                }
+
+                .image-name {
+                    position: relative;
+                    margin: 0 1rem;
+                    color: #7b7b7b;
+                    user-select: none;
+                    cursor: pointer;
+
+                }
+
+                .clear-marker {
+                    &::after {
+                        content: "×";
+                        margin-left: 0.5rem;
                     }
                 }
             }
