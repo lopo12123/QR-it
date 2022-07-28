@@ -52,7 +52,7 @@ const pickCenterImage = () => {
             const reader = new FileReader()
             reader.onload = () => {
                 centerImageName.value = file.name
-                centerImage.value = reader.result
+                centerImage.value = reader.result as string
             }
             reader.readAsDataURL(file)
         }
