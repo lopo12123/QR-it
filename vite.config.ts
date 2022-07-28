@@ -6,7 +6,8 @@ import { resolve } from "path";
 export default defineConfig({
     base: './',
     build: {
-        outDir: './dist',
+        emptyOutDir: true,
+        outDir: './docs',
         rollupOptions: {
             // output: {
             //     sourcemap: 'hidden'
