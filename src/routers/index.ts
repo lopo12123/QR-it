@@ -14,7 +14,7 @@ const routes: RouteRecordRaw[] = [
     },
     {
         path: '/mobile',
-        name: 'mobile',
+        name: 'Mobile',
         component: () => import("@/views/Mobile.vue")
     },
 ]
