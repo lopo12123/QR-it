@@ -38,6 +38,7 @@ const selectImageSource = () => {
         if(!file) return
         else if(file.size > 1500) drawFail('The picture seems too big!')
         else {
+            drawFail('')
             const reader = new FileReader()
             reader.onload = () => {
                 imgSourceName.value = file.name
