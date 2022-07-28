@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import { QRCodeRenderersOptions, toCanvas } from "qrcode";
 
-const targetType = ref<'text' | 'url'>('text')
+const targetType = ref<'text' | 'url' | 'image'>('text')
 
 // 源内容大小限制
 const textLimit = ref({
@@ -25,6 +25,29 @@ const textSource = ref('')
 // url
 const protocol = ref<'https' | 'http'>('https')
 const address = ref('')
+// 图片
+const imgSourceName = ref('')
+const imgSourceBase64 = ref('')
+const selectImageSource = () => {
+    const ipt = document.createElement('input')
+    ipt.type = 'file'
+    ipt.accept = '.png, .jpg'
+    ipt.onchange = () => {
+        const file = ipt.files?.[0]
+
+        if(!file) return
+        else if(file.size > 1500) drawFail('The picture seems too big!')
+        else {
+            const reader = new FileReader()
+            reader.onload = () => {
+                imgSourceName.value = file.name
+                imgSourceBase64.value = reader.result as string
+            }
+            reader.readAsDataURL(file)
+        }
+    }
+    ipt.click()
+}
 // endregion
 
 // region custom options
@@ -47,7 +70,7 @@ const pickCenterImage = () => {
         const file = ipt.files?.[0]
 
         if(!file) return
-        else if(file.size > 1024 * 1024) alert('Oversize(required to be smaller then 1MB)')
+        else if(file.size > 1024 * 1024) drawFail('Too big, need less than 1MB!')
         else {
             const reader = new FileReader()
             reader.onload = () => {
@@ -117,7 +140,7 @@ const drawQR = (text: string) => {
         })
 }
 const toQR = () => {
-    switch(targetType.value) {
+    switch (targetType.value) {
         case 'text':
             if(textSource.value.trim() === '') drawFail('Empty Input!')
             else drawQR(textSource.value)
@@ -125,6 +148,10 @@ const toQR = () => {
         case 'url':
             if(address.value.trim() === '') drawFail('Empty Input!')
             else drawQR(`${ protocol.value }://${ address.value }`)
+            break
+        case 'image':
+            if(imgSourceName.value === '') drawFail('Empty Input!')
+            else drawQR(`https://lopo12123.github.io/qr-it/#/image-server?code=${ imgSourceBase64.value }`)
             break
     }
 }
@@ -141,6 +168,10 @@ const toQR = () => {
             <div :class="targetType === 'url' ? 'active' : 'default'"
                  @click="targetType = 'url'">
                 URL
+            </div>
+            <div :class="targetType === 'image' ? 'active' : 'default'"
+                 @click="targetType = 'image'">
+                Image
             </div>
         </div>
 
@@ -166,6 +197,11 @@ const toQR = () => {
             </div>
 
             <input class="address-box" type="text" v-model="address">
+        </div>
+
+        <div class="image-source" v-if="targetType === 'image'">
+            <div class="image-source-picker" @click="selectImageSource">Select Image Source</div>
+            <div class="image-source-name"><b>File Name:</b> {{ imgSourceName || 'UnSelected' }}</div>
         </div>
         <!-- endregion -->
 
@@ -358,6 +394,33 @@ const toQR = () => {
             background-color: transparent;
             color: #343434;
             font-family: sans-serif;
+        }
+    }
+
+    .image-source {
+        position: relative;
+        width: 100%;
+        margin: 1rem 0;
+        color: #7b7b7b;
+
+        .image-source-picker {
+            position: relative;
+            width: 12rem;
+            height: 2rem;
+            border-radius: 1rem;
+            background-color: #7b7b7b;
+            color: #f4f4f4;
+            text-align: center;
+            line-height: 2rem;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .image-source-name {
+            position: relative;
+            width: 100%;
+            height: 3rem;
+            line-height: 3rem;
         }
     }
 

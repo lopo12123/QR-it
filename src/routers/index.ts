@@ -17,6 +17,11 @@ const routes: RouteRecordRaw[] = [
         name: 'Mobile',
         component: () => import("@/views/Mobile.vue")
     },
+    {
+        path: '/image-server',
+        name: 'ImageServer',
+        component: () => import("@/views/ImageServer.vue")
+    }
 ]
 
 const routerOptions: RouterOptions = {
