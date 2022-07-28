@@ -105,7 +105,7 @@ const drawQR = (text: string) => {
                 const img = new Image(imgSize, imgSize)
                 img.src = centerImage.value
                 img.onload = () => {
-                    ctx.fillStyle = '#fff'
+                    ctx.fillStyle = lightColor.value
                     ctx.fillRect((qrSize - blockSize) / 2, (qrSize - blockSize) / 2, blockSize, blockSize)
                     ctx.drawImage(img, (qrSize - imgSize) / 2, (qrSize - imgSize) / 2, imgSize, imgSize)
                 }
