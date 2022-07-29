@@ -141,7 +141,7 @@ const drawQR = (text: string) => {
         })
 }
 const toQR = () => {
-    switch (targetType.value) {
+    switch(targetType.value) {
         case 'text':
             if(textSource.value.trim() === '') drawFail('Empty Input!')
             else drawQR(textSource.value)
@@ -152,7 +152,13 @@ const toQR = () => {
             break
         case 'image':
             if(imgSourceName.value === '') drawFail('Empty Input!')
-            else drawQR(`https://lopo12123.github.io/qr-it/#/image-server?code=${ imgSourceBase64.value }`)
+            else {
+                const base64 = imgSourceBase64.value
+                    .replace(/=/g, '')
+                    .replace(/\//g, '-')
+                    .replace(/\+/g, '_')
+                drawQR(`https://lopo12123.github.io/qr-it/#/image-server?code=${ base64 }`)
+            }
             break
     }
 }
