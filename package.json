@@ -2,7 +2,7 @@
     "name": "qr-it",
     "private": true,
     "version": "1.0.0",
-    "description": "create qr-code for text, image, and etc.",
+    "description": "create QR-code for text, image, and etc.",
     "repository": "https://github.com/lopo12123/qr-it.git",
     "author": "lopo<lopo@zju.edu.cn>",
     "license": "MIT",

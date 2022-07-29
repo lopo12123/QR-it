@@ -1,4 +1,4 @@
-# qr-it
+# QR-it
 
 create qr-code for text, image, and etc.
 
